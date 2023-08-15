@@ -1,0 +1,50 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: devhub-backendvvvs-pipeline
+  namespace: devhub-val
+  labels:
+    type: pipeline
+spec:
+  params:
+    - name: source-repo
+      description: source repo that contains the application code
+      type: string
+      default: https:////devhub-backendvvvs
+    - name: source-branch
+      description: source branch to build from
+      default: main
+      type: string
+    - name: output-image
+      description: reference of the image that will get created
+      default: //devhub-backendvvvs
+      type: string
+  tasks:
+    - name: git-clone
+      params:
+        - name: url
+          value: $(params.source-repo)
+        - name: revision
+          value: $(params.source-branch)
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: source-folder
+    - name: 
+      params:
+        - name: VERSION
+          value: latest
+        - name: IMAGE
+          value: $(params.output-image)
+      runAfter:
+        - git-clone
+      taskRef:
+        kind: ClusterTask
+        name: 
+      workspaces:
+        - name: source
+          workspace: source-folder
+  workspaces:
+    - name: source-folder
